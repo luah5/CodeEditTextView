@@ -72,8 +72,11 @@ public class STTextViewController: NSViewController, STTextViewDelegate, ThemeAt
     /// Filters used when applying edits..
     internal var textFilters: [TextFormation.Filter] = []
 
-    /// Optional insets to offset the text view in the scroll view by.
+    /// Optional insets to offset the text view.
     public var contentInsets: NSEdgeInsets?
+
+    /// Optional insets to determine how much to offset the scroll view.
+    public var scrollViewContentInsets: NSEdgeInsets?
 
     /// A multiplier that determines the amount of space between characters. `1.0` indicates no space,
     /// `2.0` indicates one character of space between other characters.
@@ -114,6 +117,7 @@ public class STTextViewController: NSViewController, STTextViewDelegate, ThemeAt
         useThemeBackground: Bool,
         highlightProvider: HighlightProviding? = nil,
         contentInsets: NSEdgeInsets? = nil,
+        scrollViewContentInsets: NSEdgeInsets? = nil,
         isEditable: Bool,
         letterSpacing: Double
     ) {
@@ -130,6 +134,7 @@ public class STTextViewController: NSViewController, STTextViewDelegate, ThemeAt
         self.useThemeBackground = useThemeBackground
         self.highlightProvider = highlightProvider
         self.contentInsets = contentInsets
+        self.scrollViewContentInsets = rulerContentInsets
         self.isEditable = isEditable
         super.init(nibName: nil, bundle: nil)
     }
@@ -149,9 +154,9 @@ public class STTextViewController: NSViewController, STTextViewDelegate, ThemeAt
         scrollView.hasVerticalScroller = true
         scrollView.documentView = textView
         scrollView.drawsBackground = useThemeBackground
-        scrollView.automaticallyAdjustsContentInsets = contentInsets == nil
-        if let contentInsets = contentInsets {
-            scrollView.contentInsets = contentInsets
+        scrollView.automaticallyAdjustsContentInsets = scrollViewContentInsets == nil
+        if let scrollViewContentInsets = scrollViewContentInsets {
+            scrollView.contentInsets = scrollViewContentInsets
         }
 
         rulerView = STLineNumberRulerView(textView: textView, scrollView: scrollView)
@@ -300,10 +305,10 @@ public class STTextViewController: NSViewController, STTextViewDelegate, ThemeAt
         if let scrollView = view as? NSScrollView {
             scrollView.drawsBackground = useThemeBackground
             scrollView.backgroundColor = useThemeBackground ? theme.background : .clear
-            if let contentInsets = contentInsets {
-                scrollView.contentInsets = contentInsets
+            if let scrollViewContentInsets = scrollViewContentInsets {
+                scrollView.contentInsets = scrollViewContentInsets
             }
-            scrollView.contentInsets.bottom = bottomContentInsets + (contentInsets?.bottom ?? 0)
+            scrollView.contentInsets.bottom = bottomContentInsets + (scrollViewContentInsets?.bottom ?? 0)
         }
 
         highlighter?.invalidate()
